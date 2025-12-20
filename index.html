@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Discord Panel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background"></div>
+
+  <div class="card">
+    <div class="profile-container">
+      <div class="avatar-wrapper">
+        <img id="avatar" class="avatar" alt="Avatar">
+        <img id="status-icon" class="status-icon" alt="Status">
+      </div>
+      <div class="profile-info">
+        <div class="username" id="username">Loading...</div>
+      </div>
+    </div>
+
+    <div class="game-box hidden" id="activity">
+      <img id="game-logo" class="game-logo" alt="Game Logo">
+      <div class="game-info">
+        <p id="game"></p>
+        <p id="game-time" class="game-time"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

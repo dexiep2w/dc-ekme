@@ -1,0 +1,96 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
+  color: white;
+  overflow: hidden;
+}
+
+.background {
+  position: fixed;
+  inset: 0;
+  background: url("games/xxcc.png") center/cover no-repeat;
+  filter: blur(8px) brightness(0.6);
+  z-index: -1;
+}
+
+.card {
+  width: 420px;
+  padding: 20px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 0 25px rgba(0,0,0,0.5);
+  color: white;
+  text-align: left;
+}
+
+.profile-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.avatar-wrapper {
+  position: relative;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.status-icon {
+  width: 28px;
+  height: 28px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border-radius: 50%;
+  border: 2px solid black;
+  background: white;
+}
+
+.profile-info .username {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.game-box {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 15px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.game-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+}
+
+.game-info p {
+  margin: 0;
+}
+
+.game-time {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.hidden {
+  display: none;
+}
