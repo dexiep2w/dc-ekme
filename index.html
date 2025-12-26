@@ -1,33 +1,335 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Discord Panel</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discord Profil & Spotify</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@500&display=swap');
+
+body {
+    background-color: black;
+    color: white;
+    font-family: 'Fira Code', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+    margin: 0;
+    overflow: hidden;
+}
+
+.profile-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #111;
+    padding: 20px;
+    border-radius: 15px;
+    width: 500px;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    transition: transform 0.05s;
+}
+
+.avatar-container {
+    display: flex;
+    justify-content: flex-start; 
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid #7289da;
+}
+
+.info {
+    text-align: left;
+}
+
+.description {
+    margin-top: 5px;
+    font-style: italic;
+    color: #888;
+}
+
+.games, .spotify {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.game-item, .spotify {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: #1a1a1a;
+    padding: 10px;
+    border-radius: 10px;
+    min-height: 100px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.game-item img, .spotify img {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.game-item img:hover, .spotify img:hover {
+    transform: scale(1.2);
+}
+
+.game-info, .spotify-text {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.game-info .name, .spotify-text .name {
+    font-weight: bold;
+}
+
+.game-info .time, .spotify-text .time {
+    font-size: 13px;
+    color: #ccc;
+}
+
+.spotify-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.progress-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 5px;
+    background: #333;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress {
+    width: 0%;
+    height: 100%;
+    background: #1DB954;
+    transition: width 0.2s linear;
+}
+
+#refreshBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #7289da, #99aab5);
+    color: white;
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+#refreshBtn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    background: linear-gradient(135deg, #99aab5, #7289da);
+}
+</style>
 </head>
 <body>
-  <div class="background"></div>
-
-  <div class="card">
-    <div class="profile-container">
-      <div class="avatar-wrapper">
-        <img id="avatar" class="avatar" alt="Avatar">
-        <img id="status-icon" class="status-icon" alt="Status">
-      </div>
-      <div class="profile-info">
-        <div class="username" id="username">Loading...</div>
-      </div>
+<div class="profile-card" id="profileCard">
+    <div class="avatar-container">
+        <img id="avatar" src="" alt="Avatar" class="avatar">
+        <div class="info">
+            <h2 id="username">Kullanıcı</h2>
+            <div class="description">Mta - Html Developer.</div>
+        </div>
     </div>
+    <div class="games" id="games"></div>
+</div>
 
-    <div class="game-box hidden" id="activity">
-      <img id="game-logo" class="game-logo" alt="Game Logo">
-      <div class="game-info">
-        <p id="game"></p>
-        <p id="game-time" class="game-time"></p>
-      </div>
-    </div>
-  </div>
+<button id="refreshBtn">↻ Yenile</button>
 
-  <script src="script.js"></script>
+<script>
+const userId = "811619807459147776";
+const card = document.getElementById("profileCard");
+let isHovering = false;
+
+card.addEventListener("mouseenter", () => { isHovering = true; });
+card.addEventListener("mouseleave", () => { 
+    isHovering = false; 
+    card.style.transform = `rotateY(0deg) rotateX(0deg)`; 
+});
+
+document.addEventListener("mousemove", (e) => {
+    if(isHovering){
+        const x = (window.innerWidth / 2 - e.clientX) / 25; 
+        const y = (window.innerHeight / 2 - e.clientY) / 25;
+        card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    }
+});
+
+function formatDuration(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
+}
+
+function addGame(act){
+    const gameItem = document.createElement("div");
+    gameItem.className = "game-item";
+
+    const img = document.createElement("img");
+    img.src = `img/${act.name.toLowerCase().replace(/ /g,"_")}.png`;
+    img.alt = act.name;
+
+    const infoDiv = document.createElement("div");
+    infoDiv.className = "game-info";
+
+    const nameDiv = document.createElement("div");
+    nameDiv.className = "name";
+    nameDiv.innerText = act.name;
+
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "time";
+
+    infoDiv.appendChild(nameDiv);
+    infoDiv.appendChild(timeDiv);
+    gameItem.appendChild(img);
+    gameItem.appendChild(infoDiv);
+    document.getElementById("games").appendChild(gameItem);
+
+    if(act.timestamps?.start){
+        const startTimestamp = act.timestamps.start;
+        const updateTime = () => {
+            const now = Date.now();
+            const durationMs = now - startTimestamp;
+            timeDiv.innerText = formatDuration(durationMs) + " oynuyor";
+            requestAnimationFrame(updateTime);
+        }
+        updateTime();
+    } else {
+        timeDiv.innerText = "Oynama süresi bilinmiyor";
+    }
+}
+
+function addSpotify(act){
+    const spotifyDiv = document.createElement("div");
+    spotifyDiv.className = "spotify spotify-card";
+    spotifyDiv.style.cursor = "pointer";
+
+    const img = document.createElement("img");
+    img.src = act.assets.large_image.replace("spotify:","https://i.scdn.co/image/");
+    img.alt = "Spotify Albüm";
+    img.addEventListener("click", ()=> {
+        if(act.sync_id){
+            window.open(`https://open.spotify.com/track/${act.sync_id}`,'_blank');
+        }
+    });
+
+    const textDiv = document.createElement("div");
+    textDiv.className = "spotify-text";
+
+    const nameDiv = document.createElement("div");
+    nameDiv.className = "name";
+    nameDiv.innerText = act.details;
+
+    const artistDiv = document.createElement("div");
+    artistDiv.className = "time";
+    artistDiv.innerText = act.state + " • Dinliyor";
+
+    const progressContainer = document.createElement("div");
+    progressContainer.className = "progress-container";
+
+    const elapsedDiv = document.createElement("div");
+    elapsedDiv.innerText = "0:00";
+
+    const progressBar = document.createElement("div");
+    progressBar.className = "progress-bar";
+    const progress = document.createElement("div");
+    progress.className = "progress";
+    progressBar.appendChild(progress);
+
+    const totalDiv = document.createElement("div");
+    totalDiv.innerText = act.timestamps?.end ? formatDuration(act.timestamps.end - act.timestamps.start) : "0:00";
+
+    progressContainer.appendChild(elapsedDiv);
+    progressContainer.appendChild(progressBar);
+    progressContainer.appendChild(totalDiv);
+
+    textDiv.appendChild(nameDiv);
+    textDiv.appendChild(artistDiv);
+    textDiv.appendChild(progressContainer);
+
+    spotifyDiv.appendChild(img);
+    spotifyDiv.appendChild(textDiv);
+
+    document.getElementById("games").appendChild(spotifyDiv);
+
+    if(act.timestamps?.start && act.timestamps?.end){
+        const start = act.timestamps.start;
+        const end = act.timestamps.end;
+        const duration = end - start;
+
+        const updateProgress = () => {
+            const now = Date.now();
+            const elapsed = Math.min(now - start, duration);
+            elapsedDiv.innerText = formatDuration(elapsed);
+            progress.style.width = ((elapsed/duration)*100) + "%";
+            requestAnimationFrame(updateProgress);
+        }
+        updateProgress();
+    }
+}
+
+async function fetchDiscordData(){
+    try{
+        const res = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
+        const data = await res.json();
+        const user = data.data.discord_user;
+        const activities = data.data.activities;
+
+        document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+        document.getElementById("username").innerText = `${user.username}#${user.discriminator}`;
+
+        document.getElementById("games").innerHTML = "";
+
+        activities.forEach(act => {
+            if(act.type === 0) addGame(act);
+            else if(act.type === 2 && act.name === "Spotify") addSpotify(act);
+        });
+    } catch(e){
+        console.log("Hata:",e);
+    }
+}
+
+fetchDiscordData();
+
+document.getElementById("refreshBtn").addEventListener("click", () => {
+    location.reload();
+});
+</script>
 </body>
 </html>
