@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Serhtify Discord Profile</title>
+<title>Discord Glass Profile</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -23,6 +23,52 @@ body {
     padding: 20px;
     font-family: 'Inter', sans-serif;
     color: white;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* KAR YAĞIŞI */
+.snowflake {
+    position: fixed;
+    top: -10px;
+    color: white;
+    font-size: 1em;
+    font-family: Arial, sans-serif;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+    z-index: 1;
+    animation: fall linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(-10px) translateX(0);
+    }
+    100% {
+        transform: translateY(100vh) translateX(var(--sway, 0));
+    }
+}
+
+/* PARTICLE CURSOR */
+.particle {
+    position: fixed;
+    pointer-events: none;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(88, 101, 242, 0.8), transparent);
+    animation: particleFade 1s ease-out forwards;
+    z-index: 9999;
+}
+
+@keyframes particleFade {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--x), var(--y)) scale(0);
+    }
 }
 
 .profile-card {
@@ -37,19 +83,41 @@ body {
     overflow: hidden;
     transform-style: preserve-3d;
     perspective: 1000px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.15s ease-out;
     position: relative;
 }
 
+.profile-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(88, 101, 242, 0.15), transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.profile-card:hover::before {
+    opacity: 1;
+}
+
 .profile-card:hover {
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06) inset, 0 40px 120px rgba(88, 101, 242, 0.15);
-    transform: translateY(-4px) scale(1.01);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.7), 
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset, 
+        0 50px 150px rgba(88, 101, 242, 0.25),
+        0 0 100px rgba(88, 101, 242, 0.1);
 }
 
 .banner {
     height: 140px;
     background: url("img/banner.png") center / cover no-repeat;
     position: relative;
+    transform: translateZ(20px);
 }
 
 .banner::before {
@@ -66,6 +134,7 @@ body {
     margin-top: -50px;
     align-items: flex-end;
     position: relative;
+    transform: translateZ(40px);
 }
 
 .avatar-wrapper {
@@ -128,6 +197,49 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.info h2:hover {
+    transform: scale(1.05);
+}
+
+.info h2::after {
+    content: "📋";
+    position: absolute;
+    right: -25px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 14px;
+}
+
+.info h2:hover::after {
+    opacity: 1;
+}
+
+.copy-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(35, 165, 89, 0.95);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s;
+    z-index: 10000;
+    pointer-events: none;
+}
+
+.copy-notification.show {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .last-seen {
@@ -156,6 +268,23 @@ body {
     font-weight: 500;
 }
 
+.badges {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    width: 22px;
+    height: 22px;
+    transition: transform 0.2s;
+}
+
+.badge:hover {
+    transform: scale(1.2);
+}
+
 .divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
@@ -167,6 +296,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    transform: translateZ(30px);
 }
 
 .section-title {
@@ -266,6 +396,359 @@ body {
     font-weight: 500;
 }
 
+.custom-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    font-size: 13px;
+    color: #b5bac1;
+}
+
+.status-emoji {
+    font-size: 16px;
+}
+
+.stats-section {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 12px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+.stat-row:last-child {
+    margin-bottom: 0;
+}
+
+.stat-label-left {
+    font-size: 13px;
+    color: #949ba4;
+    font-weight: 500;
+}
+
+.stat-value-right {
+    font-size: 14px;
+    color: #5865f2;
+    font-weight: 700;
+}
+
+.gaming-setup {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 12px;
+}
+
+.setup-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+.setup-item:last-child {
+    margin-bottom: 0;
+}
+
+.setup-label {
+    font-size: 13px;
+    color: #949ba4;
+    font-weight: 500;
+}
+
+.setup-value {
+    font-size: 13px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.setup-button {
+    background: rgba(88, 101, 242, 0.15);
+    border: 1px solid rgba(88, 101, 242, 0.3);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #5865f2;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    margin-top: 12px;
+}
+
+.setup-button:hover {
+    background: rgba(88, 101, 242, 0.25);
+    border-color: rgba(88, 101, 242, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(88, 101, 242, 0.2);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeIn 0.3s;
+}
+
+.modal.show {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: rgba(25, 27, 31, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    animation: slideUp 0.3s;
+    position: relative;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-close {
+    cursor: pointer;
+    font-size: 24px;
+    color: #949ba4;
+    transition: all 0.3s;
+}
+
+.modal-close:hover {
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+/* HAMBURGER MENU */
+.hamburger-menu {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: rgba(25, 27, 31, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    z-index: 10001;
+    transition: all 0.3s;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.hamburger-menu:hover {
+    background: rgba(88, 101, 242, 0.2);
+    border-color: rgba(88, 101, 242, 0.5);
+    transform: scale(1.1);
+}
+
+.hamburger-line {
+    width: 24px;
+    height: 3px;
+    background: #5865f2;
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+
+.hamburger-menu.open .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger-menu.open .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu.open .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* SIDE MENU */
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 280px;
+    height: 100vh;
+    background: rgba(25, 27, 31, 0.98);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 10000;
+    transition: left 0.3s;
+    overflow-y: auto;
+    padding: 80px 20px 20px;
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.5);
+}
+
+.side-menu.open {
+    left: 0;
+}
+
+.menu-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.menu-item:hover {
+    background: rgba(88, 101, 242, 0.15);
+    border-color: rgba(88, 101, 242, 0.3);
+    transform: translateX(4px);
+}
+
+.menu-item-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.menu-item-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.menu-item-desc {
+    font-size: 12px;
+    color: #949ba4;
+}
+
+/* THEME PICKER */
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.theme-option {
+    padding: 16px;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.theme-option:hover {
+    transform: scale(1.05);
+}
+
+.theme-option.active {
+    border-color: #5865f2;
+    box-shadow: 0 0 20px rgba(88, 101, 242, 0.4);
+}
+
+.theme-dark { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+.theme-blue { background: linear-gradient(135deg, #667eea, #764ba2); }
+.theme-purple { background: linear-gradient(135deg, #667eea, #f093fb); }
+.theme-green { background: linear-gradient(135deg, #11998e, #38ef7d); }
+.theme-red { background: linear-gradient(135deg, #eb3349, #f45c43); }
+.theme-orange { background: linear-gradient(135deg, #fa709a, #fee140); }
+
+/* SNAKE GAME */
+.snake-canvas {
+    width: 100%;
+    height: 300px;
+    background: #000;
+    border-radius: 12px;
+    margin-top: 12px;
+}
+
+.snake-score {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #5865f2;
+    margin-bottom: 12px;
+}
+
+.snake-controls {
+    text-align: center;
+    font-size: 12px;
+    color: #949ba4;
+    margin-top: 8px;
+}
+
+/* CONFETTI */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: #5865f2;
+    pointer-events: none;
+    z-index: 9999;
+    animation: confettiFall 3s ease-out forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
 @media (max-width: 540px) {
     .profile-card {
         border-radius: 20px;
@@ -300,6 +783,117 @@ body {
 
 <body>
 
+<div class="copy-notification" id="copyNotification">✓ Discord tag kopyalandı!</div>
+
+<!-- HAMBURGER MENU -->
+<div class="hamburger-menu" id="hamburgerMenu">
+    <div class="hamburger-line"></div>
+    <div class="hamburger-line"></div>
+    <div class="hamburger-line"></div>
+</div>
+
+<!-- SIDE MENU -->
+<div class="side-menu" id="sideMenu">
+    <div class="menu-item" id="openTheme">
+        <div class="menu-item-icon">🎨</div>
+        <div class="menu-item-title">Tema Seçici</div>
+        <div class="menu-item-desc">Renk temasını değiştir</div>
+    </div>
+    <div class="menu-item" id="triggerConfetti">
+        <div class="menu-item-icon">🎉</div>
+        <div class="menu-item-title">Konfeti Patlat</div>
+        <div class="menu-item-desc">Kutlama yap!</div>
+    </div>
+    <div class="menu-item" id="openSnake">
+        <div class="menu-item-icon">🐍</div>
+        <div class="menu-item-title">Snake Oyunu</div>
+        <div class="menu-item-desc">Klasik yılan oyunu</div>
+    </div>
+</div>
+
+<!-- THEME MODAL -->
+<div class="modal" id="themeModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>🎨 Tema Seçici</span>
+            <span class="modal-close" id="closeTheme">×</span>
+        </div>
+        <div class="theme-grid">
+            <div class="theme-option theme-dark active" data-theme="dark">
+                <div style="color: #fff; font-weight: 600;">Dark</div>
+            </div>
+            <div class="theme-option theme-blue" data-theme="blue">
+                <div style="color: #fff; font-weight: 600;">Blue</div>
+            </div>
+            <div class="theme-option theme-purple" data-theme="purple">
+                <div style="color: #fff; font-weight: 600;">Purple</div>
+            </div>
+            <div class="theme-option theme-green" data-theme="green">
+                <div style="color: #fff; font-weight: 600;">Green</div>
+            </div>
+            <div class="theme-option theme-red" data-theme="red">
+                <div style="color: #fff; font-weight: 600;">Red</div>
+            </div>
+            <div class="theme-option theme-orange" data-theme="orange">
+                <div style="color: #fff; font-weight: 600;">Orange</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SNAKE MODAL -->
+<div class="modal" id="snakeModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>🐍 Snake Oyunu</span>
+            <span class="modal-close" id="closeSnake">×</span>
+        </div>
+        <div class="snake-score">Skor: <span id="snakeScore">0</span></div>
+        <canvas class="snake-canvas" id="snakeCanvas" width="280" height="300"></canvas>
+        <div class="snake-controls">Ok tuşları veya WASD ile oyna • Oyunu yeniden başlatmak için SPACE</div>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="setupModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>🎮 Laptop Setup</span>
+            <span class="modal-close" id="closeModal">×</span>
+        </div>
+        <div class="gaming-setup">
+            <div class="setup-item">
+                <div class="setup-label">💻 İşlemci</div>
+                <div class="setup-value">İntel İ5 13th</div>
+            </div>
+            <div class="setup-item">
+                <div class="setup-label">🎮 Ekran Kartı</div>
+                <div class="setup-value">RTX 3050</div>
+            </div>
+            <div class="setup-item">
+                <div class="setup-label">🖥️ Ekran</div>
+                <div class="setup-value">Full Hd Ekran</div>
+            </div>
+            <div class="setup-item">
+                <div class="setup-label">🖱️ Mouse</div>
+                <div class="setup-value">Rampage Blink</div>
+            </div>
+            <div class="setup-item">
+                <div class="setup-label">⌨️ Klavye</div>
+                <div class="setup-value">Everest Amber 60</div>
+            </div>
+            <div class="setup-item">
+                <div class="setup-label">🎧 Kulaklık</div>
+                <div class="setup-value">Daha Almadım</div>
+            </div>
+            <div class="setup-item">
+                <div class="setup-label">💾 RAM</div>
+                <div class="setup-value">16GB DDR4 3600MHz</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="profile-card" id="card">
     <div class="banner"></div>
 
@@ -314,6 +908,17 @@ body {
             <h2 id="username">Yükleniyor...</h2>
             <div class="last-seen" id="lastSeen">Bağlanıyor...</div>
             <div class="description">MTA - HTML Developer</div>
+            <div class="custom-status" id="customStatus" style="display: none;">
+                <span class="status-emoji" id="statusEmoji">😎</span>
+                <span id="statusText">Custom durum...</span>
+            </div>
+            <div class="badges">
+                <img src="badge/nitro.png" class="badge" alt="Nitro" title="Discord Nitro">
+                <img src="badge/hype.png" class="badge" alt="Booster" title="Server Booster">
+                <img src="badge/gorev.png" class="badge" alt="Early Supporter" title="Early Supporter">
+                <img src="badge/tag.png" class="badge" alt="Verified Developer" title="Verified Bot Developer">
+                <img src="badge/orbs.png" class="badge" alt="HypeSquad Balance" title="HypeSquad Balance">
+            </div>
         </div>
     </div>
 
@@ -322,6 +927,22 @@ body {
     <div class="content">
         <div class="section-title" id="activityTitle" style="display: none;">Aktiviteler</div>
         <div id="activities"></div>
+        
+        <div class="section-title" style="margin-top: 16px;">İstatistikler</div>
+        <div class="stats-section">
+            <div class="stat-row">
+                <div class="stat-label-left">En Aktif Gün</div>
+                <div class="stat-value-right" id="mostActiveDay">-</div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-label-left">En Aktif Saat</div>
+                <div class="stat-value-right" id="mostActiveHour">-</div>
+            </div>
+        </div>
+        
+        <div class="setup-button" id="openSetup">
+            🎮 Ekipmanlarım
+        </div>
     </div>
 </div>
 
@@ -333,19 +954,291 @@ const activityTitle = document.getElementById("activityTitle");
 const statusIndicator = document.getElementById("statusIndicator");
 let lastOnline = Date.now();
 
+// ONLINE İSTATİSTİKLERİ (LocalStorage)
+let onlineStats = JSON.parse(localStorage.getItem('onlineStats')) || {
+    hourlyActivity: {},
+    dailyActivity: {}
+};
+
+let onlineCheckInterval;
+let currentUsername = "";
+
+// PARTICLE CURSOR
+document.addEventListener('mousemove', (e) => {
+    if (Math.random() > 0.8) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = e.clientX + 'px';
+        particle.style.top = e.clientY + 'px';
+        particle.style.width = Math.random() * 8 + 4 + 'px';
+        particle.style.height = particle.style.width;
+        
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 50 + 20;
+        particle.style.setProperty('--x', Math.cos(angle) * distance + 'px');
+        particle.style.setProperty('--y', Math.sin(angle) * distance + 'px');
+        
+        document.body.appendChild(particle);
+        
+        setTimeout(() => particle.remove(), 1000);
+    }
+});
+
+// KAR YAĞIŞI
+function createSnowflake() {
+    const snowflake = document.createElement('div');
+    snowflake.className = 'snowflake';
+    snowflake.innerText = '❄';
+    snowflake.style.left = Math.random() * 100 + '%';
+    snowflake.style.fontSize = (Math.random() * 1 + 0.5) + 'em';
+    snowflake.style.animationDuration = (Math.random() * 3 + 5) + 's';
+    snowflake.style.setProperty('--sway', (Math.random() * 100 - 50) + 'px');
+    
+    document.body.appendChild(snowflake);
+    
+    setTimeout(() => snowflake.remove(), 8000);
+}
+
+// Kar yağışı başlat
+setInterval(createSnowflake, 200);
+
+// MODAL
+const setupModal = document.getElementById('setupModal');
+const openSetup = document.getElementById('openSetup');
+const closeModal = document.getElementById('closeModal');
+
+openSetup.addEventListener('click', () => {
+    setupModal.classList.add('show');
+});
+
+closeModal.addEventListener('click', () => {
+    setupModal.classList.remove('show');
+});
+
+setupModal.addEventListener('click', (e) => {
+    if (e.target === setupModal) {
+        setupModal.classList.remove('show');
+    }
+});
+
+// HAMBURGER MENU
+const hamburgerMenu = document.getElementById('hamburgerMenu');
+const sideMenu = document.getElementById('sideMenu');
+
+hamburgerMenu.addEventListener('click', () => {
+    hamburgerMenu.classList.toggle('open');
+    sideMenu.classList.toggle('open');
+});
+
+// THEME MODAL
+const themeModal = document.getElementById('themeModal');
+const openTheme = document.getElementById('openTheme');
+const closeTheme = document.getElementById('closeTheme');
+let currentTheme = localStorage.getItem('theme') || 'dark';
+
+openTheme.addEventListener('click', () => {
+    themeModal.classList.add('show');
+    sideMenu.classList.remove('open');
+    hamburgerMenu.classList.remove('open');
+});
+
+closeTheme.addEventListener('click', () => {
+    themeModal.classList.remove('show');
+});
+
+themeModal.addEventListener('click', (e) => {
+    if (e.target === themeModal) {
+        themeModal.classList.remove('show');
+    }
+});
+
+// THEME CHANGER
+const themeColors = {
+    dark: { primary: 'rgba(88, 101, 242, 0.15)', secondary: 'rgba(88, 101, 242, 0.3)' },
+    blue: { primary: 'rgba(102, 126, 234, 0.15)', secondary: 'rgba(102, 126, 234, 0.3)' },
+    purple: { primary: 'rgba(249, 147, 251, 0.15)', secondary: 'rgba(249, 147, 251, 0.3)' },
+    green: { primary: 'rgba(56, 239, 125, 0.15)', secondary: 'rgba(56, 239, 125, 0.3)' },
+    red: { primary: 'rgba(244, 92, 67, 0.15)', secondary: 'rgba(244, 92, 67, 0.3)' },
+    orange: { primary: 'rgba(254, 225, 64, 0.15)', secondary: 'rgba(254, 225, 64, 0.3)' }
+};
+
+document.querySelectorAll('.theme-option').forEach(option => {
+    option.addEventListener('click', () => {
+        const theme = option.dataset.theme;
+        document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+        option.classList.add('active');
+        currentTheme = theme;
+        localStorage.setItem('theme', theme);
+        applyTheme(theme);
+    });
+});
+
+function applyTheme(theme) {
+    const colors = themeColors[theme];
+    document.documentElement.style.setProperty('--theme-primary', colors.primary);
+    document.documentElement.style.setProperty('--theme-secondary', colors.secondary);
+}
+
+// Apply saved theme
+applyTheme(currentTheme);
+document.querySelector(`[data-theme="${currentTheme}"]`)?.classList.add('active');
+
+// CONFETTI
+const triggerConfetti = document.getElementById('triggerConfetti');
+
+triggerConfetti.addEventListener('click', () => {
+    sideMenu.classList.remove('open');
+    hamburgerMenu.classList.remove('open');
+    
+    for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = '-10px';
+            confetti.style.background = ['#5865f2', '#eb3349', '#f093fb', '#11998e', '#fee140'][Math.floor(Math.random() * 5)];
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 3000);
+        }, i * 30);
+    }
+});
+
+// SNAKE GAME
+const snakeModal = document.getElementById('snakeModal');
+const openSnake = document.getElementById('openSnake');
+const closeSnake = document.getElementById('closeSnake');
+const canvas = document.getElementById('snakeCanvas');
+const ctx = canvas.getContext('2d');
+const scoreElement = document.getElementById('snakeScore');
+
+let snake = [{x: 140, y: 150}];
+let dx = 10, dy = 0;
+let food = {x: 0, y: 0};
+let score = 0;
+let gameLoop;
+let gameRunning = false;
+
+openSnake.addEventListener('click', () => {
+    snakeModal.classList.add('show');
+    sideMenu.classList.remove('open');
+    hamburgerMenu.classList.remove('open');
+    startSnakeGame();
+});
+
+closeSnake.addEventListener('click', () => {
+    snakeModal.classList.remove('show');
+    stopSnakeGame();
+});
+
+snakeModal.addEventListener('click', (e) => {
+    if (e.target === snakeModal) {
+        snakeModal.classList.remove('show');
+        stopSnakeGame();
+    }
+});
+
+function startSnakeGame() {
+    snake = [{x: 140, y: 150}];
+    dx = 10; dy = 0;
+    score = 0;
+    scoreElement.innerText = score;
+    spawnFood();
+    gameRunning = true;
+    gameLoop = setInterval(updateSnake, 100);
+}
+
+function stopSnakeGame() {
+    gameRunning = false;
+    clearInterval(gameLoop);
+}
+
+function spawnFood() {
+    food.x = Math.floor(Math.random() * 28) * 10;
+    food.y = Math.floor(Math.random() * 30) * 10;
+}
+
+function updateSnake() {
+    const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+    
+    if (head.x < 0 || head.x >= 280 || head.y < 0 || head.y >= 300 || snake.some(s => s.x === head.x && s.y === head.y)) {
+        stopSnakeGame();
+        alert('Oyun Bitti! Skor: ' + score);
+        return;
+    }
+    
+    snake.unshift(head);
+    
+    if (head.x === food.x && head.y === food.y) {
+        score += 10;
+        scoreElement.innerText = score;
+        spawnFood();
+    } else {
+        snake.pop();
+    }
+    
+    drawSnake();
+}
+
+function drawSnake() {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, 280, 300);
+    
+    ctx.fillStyle = '#5865f2';
+    snake.forEach(segment => {
+        ctx.fillRect(segment.x, segment.y, 10, 10);
+    });
+    
+    ctx.fillStyle = '#eb3349';
+    ctx.fillRect(food.x, food.y, 10, 10);
+}
+
+document.addEventListener('keydown', (e) => {
+    if (!gameRunning) return;
+    
+    if ((e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') && dy === 0) { dx = 0; dy = -10; }
+    if ((e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') && dy === 0) { dx = 0; dy = 10; }
+    if ((e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') && dx === 0) { dx = -10; dy = 0; }
+    if ((e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') && dx === 0) { dx = 10; dy = 0; }
+    if (e.key === ' ') { stopSnakeGame(); startSnakeGame(); }
+});
+
 let hover = false;
+let mouseX = 0;
+let mouseY = 0;
+
 card.addEventListener("mouseenter", () => hover = true);
 card.addEventListener("mouseleave", () => {
     hover = false;
-    card.style.transform = "rotateX(0) rotateY(0)";
+    card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
+});
+
+card.addEventListener("mousemove", e => {
+    if (!hover) return;
+    
+    const rect = card.getBoundingClientRect();
+    mouseX = ((e.clientX - rect.left) / rect.width) * 100;
+    mouseY = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    card.style.setProperty('--mouse-x', mouseX + '%');
+    card.style.setProperty('--mouse-y', mouseY + '%');
 });
 
 document.addEventListener("mousemove", e => {
     if (!hover) return;
+    
     const rect = card.getBoundingClientRect();
-    const x = (rect.left + rect.width / 2 - e.clientX) / 25;
-    const y = (rect.top + rect.height / 2 - e.clientY) / 25;
-    card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const deltaX = (e.clientX - centerX) / (rect.width / 2);
+    const deltaY = (e.clientY - centerY) / (rect.height / 2);
+    
+    const rotateX = -deltaY * 12;
+    const rotateY = deltaX * 12;
+    const scale = 1.05;
+    
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${scale})`;
 });
 
 function formatTime(ms) {
@@ -369,10 +1262,75 @@ function formatSpotifyTime(ms) {
     return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
+function updateOnlineStats(isOnline) {
+    if (!isOnline) return;
+    
+    const now = new Date();
+    const hour = now.getHours();
+    const day = now.toLocaleDateString('tr-TR', { weekday: 'long' });
+    
+    // Saatlik aktivite
+    onlineStats.hourlyActivity[hour] = (onlineStats.hourlyActivity[hour] || 0) + 1;
+    
+    // Günlük aktivite
+    onlineStats.dailyActivity[day] = (onlineStats.dailyActivity[day] || 0) + 1;
+    
+    localStorage.setItem('onlineStats', JSON.stringify(onlineStats));
+}
+
+function renderStats() {
+    const mostActiveDay = document.getElementById('mostActiveDay');
+    const mostActiveHour = document.getElementById('mostActiveHour');
+    
+    // En aktif gün
+    const dayEntries = Object.entries(onlineStats.dailyActivity);
+    if (dayEntries.length > 0) {
+        const topDay = dayEntries.sort((a, b) => b[1] - a[1])[0];
+        mostActiveDay.innerText = topDay[0];
+    }
+    
+    // En aktif saat
+    const hourEntries = Object.entries(onlineStats.hourlyActivity);
+    if (hourEntries.length > 0) {
+        const topHour = hourEntries.sort((a, b) => b[1] - a[1])[0];
+        mostActiveHour.innerText = `${topHour[0]}:00`;
+    }
+}
+
+function copyDiscordTag() {
+    if (!currentUsername) return;
+    
+    navigator.clipboard.writeText(currentUsername).then(() => {
+        const notification = document.getElementById('copyNotification');
+        notification.classList.add('show');
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 2000);
+    });
+}
+
 function render(data) {
     const u = data.discord_user;
     avatar.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
-    username.innerText = u.discriminator === "0" ? u.username : `${u.username}#${u.discriminator}`;
+    currentUsername = u.discriminator === "0" ? u.username : `${u.username}#${u.discriminator}`;
+    username.innerText = currentUsername;
+    
+    // Discord tag kopyalama
+    username.onclick = copyDiscordTag;
+
+    // CUSTOM STATUS
+    const customStatus = data.activities.find(a => a.type === 4);
+    const customStatusDiv = document.getElementById('customStatus');
+    const statusEmoji = document.getElementById('statusEmoji');
+    const statusText = document.getElementById('statusText');
+    
+    if (customStatus) {
+        customStatusDiv.style.display = "flex";
+        statusEmoji.innerText = customStatus.emoji?.name || "💬";
+        statusText.innerText = customStatus.state || "...";
+    } else {
+        customStatusDiv.style.display = "none";
+    }
 
     activities.innerHTML = "";
     let online = false;
@@ -382,6 +1340,17 @@ function render(data) {
     );
 
     if (validActivities.length > 0) {
+        const hasGame = validActivities.some(a => a.type === 0);
+        const hasSpotify = validActivities.some(a => a.type === 2);
+        
+        if (hasGame && hasSpotify) {
+            activityTitle.innerText = "Oyun & Spotify";
+        } else if (hasGame) {
+            activityTitle.innerText = "Oyun";
+        } else if (hasSpotify) {
+            activityTitle.innerText = "Spotify";
+        }
+        
         activityTitle.style.display = "block";
         online = true;
     } else {
@@ -434,9 +1403,12 @@ function render(data) {
         if (a.type === 2 && a.name === "Spotify") {
             const d = document.createElement("div");
             d.className = "activity";
+            d.style.cursor = "pointer";
             const albumArt = a.assets?.large_image 
                 ? a.assets.large_image.replace("spotify:", "https://i.scdn.co/image/")
                 : "img/spotify.png";
+            
+            const spotifyUrl = a.sync_id ? `https://open.spotify.com/track/${a.sync_id}` : null;
             
             d.innerHTML = `
                 <img src="${albumArt}">
@@ -450,6 +1422,20 @@ function render(data) {
                     </div>
                 </div>
             `;
+            
+            if (spotifyUrl) {
+                d.addEventListener("click", () => {
+                    window.open(spotifyUrl, "_blank");
+                });
+                d.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+                d.addEventListener("mouseenter", () => {
+                    d.style.transform = "translateX(8px) scale(1.02)";
+                });
+                d.addEventListener("mouseleave", () => {
+                    d.style.transform = "translateX(4px)";
+                });
+            }
+            
             activities.appendChild(d);
 
             if (a.timestamps) {
@@ -478,6 +1464,7 @@ function render(data) {
         lastSeen.innerText = "Şu an aktif";
         statusIndicator.style.background = "#23a559";
         statusIndicator.style.boxShadow = "0 0 12px rgba(35, 165, 89, 0.6)";
+        updateOnlineStats(true);
     } else {
         const minutesAgo = Math.floor((Date.now() - lastOnline) / 60000);
         lastSeen.innerText = `Son görülme: ${minutesAgo} dk önce`;
@@ -493,6 +1480,8 @@ function render(data) {
             </div>
         `;
     }
+    
+    renderStats();
 }
 
 const ws = new WebSocket("wss://api.lanyard.rest/socket");
@@ -514,15 +1503,27 @@ ws.onmessage = (m) => {
 };
 
 ws.onerror = (error) => {
+    console.error("WebSocket error:", error);
     lastSeen.innerText = "Bağlantı hatası";
 };
 
 ws.onclose = () => {
     clearInterval(heartbeatInterval);
+    clearInterval(onlineCheckInterval);
     setTimeout(() => location.reload(), 5000);
 };
+
+// Online süre sayacı
+onlineCheckInterval = setInterval(() => {
+    if (lastSeen.innerText === "Şu an aktif") {
+        localStorage.setItem('onlineStats', JSON.stringify(onlineStats));
+        renderStats();
+    }
+}, 60000); // Her dakika
+
+// İlk yükleme
+renderStats();
 </script>
 
 </body>
-</html
-
+</html>
