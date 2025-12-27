@@ -3,334 +3,525 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Serhtify</title>
+<title>Discord Glass Profile</title>
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
-    background-color: black;
-    color: white;
-    font-family: 'Fira Code', monospace;
+    min-height: 100vh;
+    background: #000 url('img/back.png') center / cover no-repeat fixed;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    padding-top: 50px;
-    margin: 0;
-    overflow: hidden;
+    align-items: center;
+    padding: 20px;
+    font-family: 'Inter', sans-serif;
+    color: white;
 }
 
 .profile-card {
-    display: flex;
-    flex-direction: column;
-    background-color: #111;
-    padding: 20px;
-    border-radius: 15px;
-    width: 500px;
-    perspective: 1000px;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 24px;
+    background: rgba(25, 27, 31, 0.75);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.03) inset, 0 30px 90px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
     transform-style: preserve-3d;
-    transition: transform 0.05s;
+    perspective: 1000px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.profile-card:hover {
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06) inset, 0 40px 120px rgba(88, 101, 242, 0.15);
+    transform: translateY(-4px) scale(1.01);
+}
+
+.banner {
+    height: 140px;
+    background: url("img/banner.png") center / cover no-repeat;
+    position: relative;
+}
+
+.banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 60%, rgba(25, 27, 31, 0.9) 100%);
 }
 
 .avatar-container {
     display: flex;
-    justify-content: flex-start; 
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 16px;
+    padding: 0 24px;
+    margin-top: -50px;
+    align-items: flex-end;
+    position: relative;
+}
+
+.avatar-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
 }
 
 .avatar {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
-    border: 3px solid #7289da;
+    border: 4px solid rgba(25, 27, 31, 0.9);
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.avatar-wrapper:hover .avatar {
+    transform: scale(1.05);
+}
+
+.avatar-decoration {
+    position: absolute;
+    top: -12px;
+    left: -12px;
+    width: 124px;
+    height: 124px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.status-indicator {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #23a559;
+    border: 4px solid rgba(25, 27, 31, 0.9);
+    z-index: 3;
+    box-shadow: 0 0 12px rgba(35, 165, 89, 0.6);
 }
 
 .info {
-    text-align: left;
+    flex: 1;
+    padding-bottom: 8px;
+}
+
+.info h2 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+}
+
+.last-seen {
+    font-size: 13px;
+    color: #b5bac1;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.last-seen::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #23a559;
+    display: inline-block;
+    box-shadow: 0 0 8px rgba(35, 165, 89, 0.6);
 }
 
 .description {
-    margin-top: 5px;
-    font-style: italic;
-    color: #888;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #949ba4;
+    font-weight: 500;
 }
 
-.games, .spotify {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
-    width: 100%;
+.divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    margin: 20px 0 16px 0;
 }
 
-.game-item, .spotify {
+.content {
+    padding: 0 24px 24px;
     display: flex;
     flex-direction: column;
+    gap: 12px;
+}
+
+.section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #949ba4;
+    margin-bottom: 8px;
+}
+
+.activity {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    gap: 14px;
     align-items: center;
-    justify-content: flex-start;
-    background-color: #1a1a1a;
-    padding: 10px;
-    border-radius: 10px;
-    min-height: 100px;
-    width: 100%;
-    box-sizing: border-box;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.game-item img, .spotify img {
+.activity:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(4px);
+}
+
+.activity img {
     width: 60px;
     height: 60px;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.game-item img:hover, .spotify img:hover {
-    transform: scale(1.2);
-}
-
-.game-info, .spotify-text {
+.activity-text {
     display: flex;
     flex-direction: column;
-    text-align: center;
+    gap: 4px;
+    flex: 1;
 }
 
-.game-info .name, .spotify-text .name {
-    font-weight: bold;
+.name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #fff;
+    line-height: 1.3;
 }
 
-.game-info .time, .spotify-text .time {
+.time {
     font-size: 13px;
-    color: #ccc;
-}
-
-.spotify-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
+    color: #b5bac1;
+    font-weight: 500;
 }
 
 .progress-container {
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 100%;
-    margin-top: 5px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #949ba4;
+    font-weight: 600;
 }
 
 .progress-bar {
     flex: 1;
-    height: 5px;
-    background: #333;
-    border-radius: 5px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
     overflow: hidden;
 }
 
 .progress {
-    width: 0%;
     height: 100%;
-    background: #1DB954;
-    transition: width 0.2s linear;
+    width: 0%;
+    background: linear-gradient(90deg, #1DB954, #1ed760);
+    border-radius: 4px;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 12px rgba(29, 185, 84, 0.4);
 }
 
-#refreshBtn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 50px;
-    background: linear-gradient(135deg, #7289da, #99aab5);
-    color: white;
-    font-family: 'Fira Code', monospace;
+.empty-state {
+    text-align: center;
+    padding: 32px 24px;
+    color: #6d7481;
+}
+
+.empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.3;
+}
+
+.empty-state-text {
     font-size: 14px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
-#refreshBtn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-    background: linear-gradient(135deg, #99aab5, #7289da);
+@media (max-width: 540px) {
+    .profile-card {
+        border-radius: 20px;
+        max-width: 100%;
+    }
+    .avatar-container {
+        padding: 0 20px;
+    }
+    .content {
+        padding: 0 20px 20px;
+    }
+    .info h2 {
+        font-size: 18px;
+    }
+    .avatar-wrapper {
+        width: 80px;
+        height: 80px;
+    }
+    .avatar {
+        width: 80px;
+        height: 80px;
+    }
+    .avatar-decoration {
+        width: 104px;
+        height: 104px;
+        top: -12px;
+        left: -12px;
+    }
 }
 </style>
 </head>
+
 <body>
-<div class="profile-card" id="profileCard">
+
+<div class="profile-card" id="card">
+    <div class="banner"></div>
+
     <div class="avatar-container">
-        <img id="avatar" src="" alt="Avatar" class="avatar">
+        <div class="avatar-wrapper">
+            <img id="avatar" class="avatar">
+            <img src="img/yoru_dimensional_drift.webp" class="avatar-decoration">
+            <div class="status-indicator" id="statusIndicator"></div>
+        </div>
+
         <div class="info">
-            <h2 id="username">Kullanıcı</h2>
-            <div class="description">Mta - Html Developer.</div>
+            <h2 id="username">Yükleniyor...</h2>
+            <div class="last-seen" id="lastSeen">Bağlanıyor...</div>
+            <div class="description">MTA - HTML Developer</div>
         </div>
     </div>
-    <div class="games" id="games"></div>
-</div>
 
-<button id="refreshBtn">↻ Yenile</button>
+    <div class="divider"></div>
+
+    <div class="content">
+        <div class="section-title" id="activityTitle" style="display: none;">Aktiviteler</div>
+        <div id="activities"></div>
+    </div>
+</div>
 
 <script>
 const userId = "811619807459147776";
-const card = document.getElementById("profileCard");
-let isHovering = false;
+const card = document.getElementById("card");
+const activities = document.getElementById("activities");
+const activityTitle = document.getElementById("activityTitle");
+const statusIndicator = document.getElementById("statusIndicator");
+let lastOnline = Date.now();
 
-card.addEventListener("mouseenter", () => { isHovering = true; });
-card.addEventListener("mouseleave", () => { 
-    isHovering = false; 
-    card.style.transform = `rotateY(0deg) rotateX(0deg)`; 
+let hover = false;
+card.addEventListener("mouseenter", () => hover = true);
+card.addEventListener("mouseleave", () => {
+    hover = false;
+    card.style.transform = "rotateX(0) rotateY(0)";
 });
 
-document.addEventListener("mousemove", (e) => {
-    if(isHovering){
-        const x = (window.innerWidth / 2 - e.clientX) / 25; 
-        const y = (window.innerHeight / 2 - e.clientY) / 25;
-        card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
-    }
+document.addEventListener("mousemove", e => {
+    if (!hover) return;
+    const rect = card.getBoundingClientRect();
+    const x = (rect.left + rect.width / 2 - e.clientX) / 25;
+    const y = (rect.top + rect.height / 2 - e.clientY) / 25;
+    card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
 });
 
-function formatDuration(ms) {
+function formatTime(ms) {
     const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds < 10 ? '0'+seconds : seconds}`;
-}
-
-function addGame(act){
-    const gameItem = document.createElement("div");
-    gameItem.className = "game-item";
-
-    const img = document.createElement("img");
-    img.src = `img/${act.name.toLowerCase().replace(/ /g,"_")}.png`;
-    img.alt = act.name;
-
-    const infoDiv = document.createElement("div");
-    infoDiv.className = "game-info";
-
-    const nameDiv = document.createElement("div");
-    nameDiv.className = "name";
-    nameDiv.innerText = act.name;
-
-    const timeDiv = document.createElement("div");
-    timeDiv.className = "time";
-
-    infoDiv.appendChild(nameDiv);
-    infoDiv.appendChild(timeDiv);
-    gameItem.appendChild(img);
-    gameItem.appendChild(infoDiv);
-    document.getElementById("games").appendChild(gameItem);
-
-    if(act.timestamps?.start){
-        const startTimestamp = act.timestamps.start;
-        const updateTime = () => {
-            const now = Date.now();
-            const durationMs = now - startTimestamp;
-            timeDiv.innerText = formatDuration(durationMs) + " oynuyor";
-            requestAnimationFrame(updateTime);
-        }
-        updateTime();
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const totalHours = Math.floor(totalMinutes / 60);
+    
+    if (totalHours > 0) {
+        const minutes = totalMinutes % 60;
+        return `${totalHours} saat ${minutes} dk`;
     } else {
-        timeDiv.innerText = "Oynama süresi bilinmiyor";
+        const seconds = totalSeconds % 60;
+        return `${totalMinutes}:${seconds.toString().padStart(2, "0")}`;
     }
 }
 
-function addSpotify(act){
-    const spotifyDiv = document.createElement("div");
-    spotifyDiv.className = "spotify spotify-card";
-    spotifyDiv.style.cursor = "pointer";
+function formatSpotifyTime(ms) {
+    const s = Math.floor(ms / 1000);
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec.toString().padStart(2, "0")}`;
+}
 
-    const img = document.createElement("img");
-    img.src = act.assets.large_image.replace("spotify:","https://i.scdn.co/image/");
-    img.alt = "Spotify Albüm";
-    img.addEventListener("click", ()=> {
-        if(act.sync_id){
-            window.open(`https://open.spotify.com/track/${act.sync_id}`,'_blank');
+function render(data) {
+    const u = data.discord_user;
+    avatar.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=256`;
+    username.innerText = u.discriminator === "0" ? u.username : `${u.username}#${u.discriminator}`;
+
+    activities.innerHTML = "";
+    let online = false;
+
+    const validActivities = data.activities.filter(a => 
+        (a.type === 0 && a.name) || (a.type === 2 && a.name === "Spotify")
+    );
+
+    if (validActivities.length > 0) {
+        activityTitle.style.display = "block";
+        online = true;
+    } else {
+        activityTitle.style.display = "none";
+    }
+
+    validActivities.forEach(a => {
+        if (a.type === 0) {
+            const d = document.createElement("div");
+            d.className = "activity";
+            
+            let imgSrc = null;
+            
+            if (a.assets?.large_image) {
+                imgSrc = `https://cdn.discordapp.com/app-assets/${a.application_id}/${a.assets.large_image}.png?size=256`;
+            } else if (a.assets?.small_image) {
+                imgSrc = `https://cdn.discordapp.com/app-assets/${a.application_id}/${a.assets.small_image}.png?size=256`;
+            }
+            
+            if (!imgSrc && a.application_id) {
+                imgSrc = `https://dcdn.dstn.to/app-icons/${a.application_id}`;
+            }
+            
+            if (!imgSrc) {
+                imgSrc = `img/${a.name.toLowerCase().replace(/ /g, "_")}.png`;
+            }
+            
+            d.innerHTML = `
+                <img src="${imgSrc}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(a.name)}&size=60&background=random&color=fff&bold=true'">
+                <div class="activity-text">
+                    <div class="name">${a.name}</div>
+                    <div class="time" id="t-${a.created_at || Date.now()}">Oynuyor</div>
+                </div>
+            `;
+            activities.appendChild(d);
+
+            if (a.timestamps?.start) {
+                const t = d.querySelector(".time");
+                const loop = () => {
+                    const elapsed = Date.now() - a.timestamps.start;
+                    t.innerText = `${formatTime(elapsed)} oynuyor`;
+                    if (document.visibilityState === 'visible') {
+                        requestAnimationFrame(loop);
+                    }
+                };
+                loop();
+            }
+        }
+
+        if (a.type === 2 && a.name === "Spotify") {
+            const d = document.createElement("div");
+            d.className = "activity";
+            const albumArt = a.assets?.large_image 
+                ? a.assets.large_image.replace("spotify:", "https://i.scdn.co/image/")
+                : "img/spotify.png";
+            
+            d.innerHTML = `
+                <img src="${albumArt}">
+                <div class="activity-text">
+                    <div class="name">${a.details || "Bilinmeyen Şarkı"}</div>
+                    <div class="time" id="spotify-time-${a.created_at}">Dinliyor</div>
+                    <div class="progress-container">
+                        <div id="el-${a.created_at}">0:00</div>
+                        <div class="progress-bar"><div class="progress" id="pr-${a.created_at}"></div></div>
+                        <div>${a.timestamps ? formatSpotifyTime(a.timestamps.end - a.timestamps.start) : "0:00"}</div>
+                    </div>
+                </div>
+            `;
+            activities.appendChild(d);
+
+            if (a.timestamps) {
+                const el = d.querySelector(`#el-${a.created_at}`);
+                const pr = d.querySelector(`#pr-${a.created_at}`);
+                const spotifyTime = d.querySelector(`#spotify-time-${a.created_at}`);
+                const st = a.timestamps.start;
+                const du = a.timestamps.end - st;
+
+                const loop = () => {
+                    const e = Math.min(Date.now() - st, du);
+                    el.innerText = formatSpotifyTime(e);
+                    pr.style.width = (e / du * 100) + "%";
+                    spotifyTime.innerText = `${a.state || "Bilinmeyen Sanatçı"} - Dinliyor`;
+                    if (document.visibilityState === 'visible') {
+                        requestAnimationFrame(loop);
+                    }
+                };
+                loop();
+            }
         }
     });
 
-    const textDiv = document.createElement("div");
-    textDiv.className = "spotify-text";
+    if (online || data.discord_status !== "offline") {
+        lastOnline = Date.now();
+        lastSeen.innerText = "Şu an aktif";
+        statusIndicator.style.background = "#23a559";
+        statusIndicator.style.boxShadow = "0 0 12px rgba(35, 165, 89, 0.6)";
+    } else {
+        const minutesAgo = Math.floor((Date.now() - lastOnline) / 60000);
+        lastSeen.innerText = `Son görülme: ${minutesAgo} dk önce`;
+        statusIndicator.style.background = "#80848e";
+        statusIndicator.style.boxShadow = "0 0 12px rgba(128, 132, 142, 0.6)";
+    }
 
-    const nameDiv = document.createElement("div");
-    nameDiv.className = "name";
-    nameDiv.innerText = act.details;
-
-    const artistDiv = document.createElement("div");
-    artistDiv.className = "time";
-    artistDiv.innerText = act.state + " • Dinliyor";
-
-    const progressContainer = document.createElement("div");
-    progressContainer.className = "progress-container";
-
-    const elapsedDiv = document.createElement("div");
-    elapsedDiv.innerText = "0:00";
-
-    const progressBar = document.createElement("div");
-    progressBar.className = "progress-bar";
-    const progress = document.createElement("div");
-    progress.className = "progress";
-    progressBar.appendChild(progress);
-
-    const totalDiv = document.createElement("div");
-    totalDiv.innerText = act.timestamps?.end ? formatDuration(act.timestamps.end - act.timestamps.start) : "0:00";
-
-    progressContainer.appendChild(elapsedDiv);
-    progressContainer.appendChild(progressBar);
-    progressContainer.appendChild(totalDiv);
-
-    textDiv.appendChild(nameDiv);
-    textDiv.appendChild(artistDiv);
-    textDiv.appendChild(progressContainer);
-
-    spotifyDiv.appendChild(img);
-    spotifyDiv.appendChild(textDiv);
-
-    document.getElementById("games").appendChild(spotifyDiv);
-
-    if(act.timestamps?.start && act.timestamps?.end){
-        const start = act.timestamps.start;
-        const end = act.timestamps.end;
-        const duration = end - start;
-
-        const updateProgress = () => {
-            const now = Date.now();
-            const elapsed = Math.min(now - start, duration);
-            elapsedDiv.innerText = formatDuration(elapsed);
-            progress.style.width = ((elapsed/duration)*100) + "%";
-            requestAnimationFrame(updateProgress);
-        }
-        updateProgress();
+    if (validActivities.length === 0) {
+        activities.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">💤</div>
+                <div class="empty-state-text">Şu anda hiçbir aktivite yok</div>
+            </div>
+        `;
     }
 }
 
-async function fetchDiscordData(){
-    try{
-        const res = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
-        const data = await res.json();
-        const user = data.data.discord_user;
-        const activities = data.data.activities;
+const ws = new WebSocket("wss://api.lanyard.rest/socket");
+let heartbeatInterval;
 
-        document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-        document.getElementById("username").innerText = `${user.username}#${user.discriminator}`;
+ws.onopen = () => {
+    ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: userId } }));
+};
 
-        document.getElementById("games").innerHTML = "";
-
-        activities.forEach(act => {
-            if(act.type === 0) addGame(act);
-            else if(act.type === 2 && act.name === "Spotify") addSpotify(act);
-        });
-    } catch(e){
-        console.log("Hata:",e);
+ws.onmessage = (m) => {
+    const j = JSON.parse(m.data);
+    if (j.op === 1) {
+        heartbeatInterval = setInterval(() => {
+            ws.send(JSON.stringify({ op: 3 }));
+        }, j.d.heartbeat_interval);
     }
-}
+    if (j.t === "INIT_STATE") render(j.d);
+    if (j.t === "PRESENCE_UPDATE") render(j.d);
+};
 
-fetchDiscordData();
+ws.onerror = (error) => {
+    lastSeen.innerText = "Bağlantı hatası";
+};
 
-document.getElementById("refreshBtn").addEventListener("click", () => {
-    location.reload();
-});
+ws.onclose = () => {
+    clearInterval(heartbeatInterval);
+    setTimeout(() => location.reload(), 5000);
+};
 </script>
-</body>
-</html>
 
+</body>
+</html
